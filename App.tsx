@@ -1,5 +1,5 @@
 import React from 'react';
-import {Text, View} from 'react-native';
+import {Text, View, ScrollView} from 'react-native';
 import {BleManager, Device, State, LogLevel} from 'react-native-ble-plx';
 import {useObservable} from 'rxjs-hooks';
 import {selectAdapterState, selectDevices} from './ble';
@@ -16,13 +16,13 @@ const App: React.FC = () => {
   const devices: Device[] | null = useObservable(() => devices$);
 
   return (
-    <View>
+    <ScrollView>
       <Text>BLE Application</Text>
       <Text>Adapter State: {bluetoothAdapterState}</Text>
       {devices?.map((device, i) => (
         <Text key={i}>{device.name}</Text>
       ))}
-    </View>
+    </ScrollView>
   );
 };
 

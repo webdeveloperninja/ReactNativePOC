@@ -36,9 +36,13 @@ const selectDevicesFn: SetDeviceListnerFn = (
 
   requestPermissionForBle().then((granted) => {
     if (granted) {
-      manager.startDeviceScan(null, null, (error, device) => {
-        if (device != null) {
-          _devices.next([..._devices.value, device]);
+      manager.startDeviceScan(null, null, (error, deviceToAdd) => {
+        if (
+          deviceToAdd != null &&
+          deviceToAdd.name !== null &&
+          !_devices.value.some((device) => device.id === device.id)
+        ) {
+          _devices.next([..._devices.value, deviceToAdd]);
         }
       });
     }

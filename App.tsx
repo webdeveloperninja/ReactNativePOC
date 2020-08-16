@@ -1,6 +1,12 @@
 import React from 'react';
 import {Button, ScrollView, Text} from 'react-native';
-import {BleManager, Device, LogLevel, State} from 'react-native-ble-plx';
+import {
+  BleManager,
+  Device,
+  LogLevel,
+  State,
+  Characteristic,
+} from 'react-native-ble-plx';
 import {useObservable} from 'rxjs-hooks';
 import {
   selectAdapterState,
@@ -9,6 +15,7 @@ import {
   selectServices,
   createDeviceConnection,
 } from './ble';
+import {first} from 'rxjs/operators';
 
 const App: React.FC = () => {
   const bleManager = new BleManager();
@@ -21,15 +28,20 @@ const App: React.FC = () => {
   );
   const devices: Device[] | null = useObservable(() => devices$);
 
+  let characteristics: Characteristic[] = [];
+
   const onButtonPress = (device: Device) => {
     bleManager.stopDeviceScan();
 
     const connectedDevice$ = createDeviceConnection(device);
     const servicesForDevice$ = selectServices(connectedDevice$);
 
-    selectCharacteristics(servicesForDevice$).subscribe((characteristics) =>
-      console.log('characteristics', characteristics),
-    );
+    selectCharacteristics(servicesForDevice$)
+      .pipe(first())
+      .subscribe(
+        (newCharacteristics) =>
+          (characteristics = [...characteristics, ...newCharacteristics]),
+      );
   };
 
   return (
@@ -43,6 +55,13 @@ const App: React.FC = () => {
           onPress={() => onButtonPress(device)}
           color="#f194ff"
         />
+      ))}
+
+      <Text>Characteristics</Text>
+      {characteristics.map((c, i) => (
+        <Text key={i}>
+          {c.uuid}, value: {c.value}{' '}
+        </Text>
       ))}
     </ScrollView>
   );

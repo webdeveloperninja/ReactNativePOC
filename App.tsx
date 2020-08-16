@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {ScrollView, Text} from 'react-native';
 import {
   BleManager,
@@ -18,6 +18,7 @@ import {
 import {first} from 'rxjs/operators';
 import {Provider} from 'react-native-paper';
 import {Button} from 'react-native-paper';
+import {BehaviorSubject} from 'rxjs';
 
 const App: React.FC = () => {
   const bleManager = new BleManager();
@@ -30,7 +31,7 @@ const App: React.FC = () => {
   );
   const devices: Device[] | null = useObservable(() => devices$);
 
-  let characteristics: Characteristic[] = [];
+  const [characteristics, setCharacteristics] = useState<Characteristic[]>([]);
 
   const onButtonPress = (device: Device) => {
     bleManager.stopDeviceScan();
@@ -40,9 +41,8 @@ const App: React.FC = () => {
 
     selectCharacteristics(servicesForDevice$)
       .pipe(first())
-      .subscribe(
-        (newCharacteristics) =>
-          (characteristics = [...characteristics, ...newCharacteristics]),
+      .subscribe((newCharacteristics) =>
+        setCharacteristics([...characteristics, ...newCharacteristics]),
       );
   };
 
@@ -61,11 +61,15 @@ const App: React.FC = () => {
         ))}
 
         <Text>Characteristics</Text>
-        {characteristics.map((c, i) => (
-          <Text key={i}>
-            {c.uuid}, value: {c.value}{' '}
-          </Text>
-        ))}
+        {characteristics ? (
+          characteristics.map((c) => (
+            <Text>
+              UUID: {c.uuid}, VALUE: {c.value}
+            </Text>
+          ))
+        ) : (
+          <Text>No Characteristics Found</Text>
+        )}
       </ScrollView>
     </Provider>
   );

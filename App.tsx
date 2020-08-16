@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, ScrollView, Text} from 'react-native';
+import {ScrollView, Text} from 'react-native';
 import {
   BleManager,
   Device,
@@ -16,6 +16,8 @@ import {
   createDeviceConnection,
 } from './ble';
 import {first} from 'rxjs/operators';
+import {Provider} from 'react-native-paper';
+import {Button} from 'react-native-paper';
 
 const App: React.FC = () => {
   const bleManager = new BleManager();
@@ -45,25 +47,27 @@ const App: React.FC = () => {
   };
 
   return (
-    <ScrollView>
-      <Text>BLE Application</Text>
-      <Text>Adapter State: {bluetoothAdapterState}</Text>
-      {devices?.map((device, i) => (
-        <Button
-          key={i}
-          title={device.name ? device.name : ''}
-          onPress={() => onButtonPress(device)}
-          color="#f194ff"
-        />
-      ))}
+    <Provider>
+      <ScrollView>
+        <Text>BLE Application</Text>
+        <Text>Adapter State: {bluetoothAdapterState}</Text>
+        {devices?.map((device, i) => (
+          <Button
+            mode="contained"
+            key={i}
+            onPress={() => onButtonPress(device)}>
+            <Text>{device.name ? device.name : ''}</Text>
+          </Button>
+        ))}
 
-      <Text>Characteristics</Text>
-      {characteristics.map((c, i) => (
-        <Text key={i}>
-          {c.uuid}, value: {c.value}{' '}
-        </Text>
-      ))}
-    </ScrollView>
+        <Text>Characteristics</Text>
+        {characteristics.map((c, i) => (
+          <Text key={i}>
+            {c.uuid}, value: {c.value}{' '}
+          </Text>
+        ))}
+      </ScrollView>
+    </Provider>
   );
 };
 

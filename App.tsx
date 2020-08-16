@@ -2,23 +2,20 @@ import React, {useState} from 'react';
 import {ScrollView, Text} from 'react-native';
 import {
   BleManager,
+  Characteristic,
   Device,
   LogLevel,
   State,
-  Characteristic,
 } from 'react-native-ble-plx';
+import {Button, Provider} from 'react-native-paper';
 import {useObservable} from 'rxjs-hooks';
 import {
-  selectAdapterState,
-  selectCharacteristics,
-  selectDevices,
-  selectServices,
+  characteristicId,
   createDeviceConnection,
+  esp32ServiceId,
+  selectAdapterState,
+  selectDevices,
 } from './ble';
-import {first} from 'rxjs/operators';
-import {Provider} from 'react-native-paper';
-import {Button} from 'react-native-paper';
-import {BehaviorSubject} from 'rxjs';
 
 const App: React.FC = () => {
   const bleManager = new BleManager();
@@ -37,13 +34,13 @@ const App: React.FC = () => {
     bleManager.stopDeviceScan();
 
     const connectedDevice$ = createDeviceConnection(device);
-    const servicesForDevice$ = selectServices(connectedDevice$);
 
-    selectCharacteristics(servicesForDevice$)
-      .pipe(first())
-      .subscribe((newCharacteristics) =>
-        setCharacteristics([...characteristics, ...newCharacteristics]),
-      );
+    connectedDevice$.subscribe((d) => {
+      d.readCharacteristicForService(
+        esp32ServiceId,
+        characteristicId,
+      ).then((c) => setCharacteristics([c]));
+    });
   };
 
   return (
@@ -62,8 +59,8 @@ const App: React.FC = () => {
 
         <Text>Characteristics</Text>
         {characteristics ? (
-          characteristics.map((c) => (
-            <Text>
+          characteristics.map((c, i) => (
+            <Text key={i}>
               UUID: {c.uuid}, VALUE: {c.value}
             </Text>
           ))

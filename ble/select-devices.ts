@@ -3,7 +3,8 @@ import {BehaviorSubject, defer, Observable} from 'rxjs';
 import {distinctUntilChanged, filter, switchMap} from 'rxjs/operators';
 import {requestPermissionForBle} from './permissions';
 
-const esp32ServiceId = '4fafc201-1fb5-459e-8fcc-c5c9c331914b';
+export const esp32ServiceId = '4fafc201-1fb5-459e-8fcc-c5c9c331914b';
+export const characteristicId = 'beb5483e-36e1-4688-b7f5-ea07361b26a8';
 
 type SetDeviceListnerFn = (manager: BleManager) => Observable<Device[]>;
 

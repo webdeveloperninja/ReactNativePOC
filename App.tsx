@@ -16,6 +16,7 @@ import {
   selectAdapterState,
   selectDevices,
 } from './ble';
+import base64 from 'react-native-base64';
 
 const App: React.FC = () => {
   const bleManager = new BleManager();
@@ -61,7 +62,7 @@ const App: React.FC = () => {
         {characteristics ? (
           characteristics.map((c, i) => (
             <Text key={i}>
-              UUID: {c.uuid}, VALUE: {c.value}
+              UUID: {c.uuid}, VALUE: {base64.decode(c.value)}
             </Text>
           ))
         ) : (

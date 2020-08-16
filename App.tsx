@@ -1,10 +1,14 @@
 import React from 'react';
-import {Text, Button, ScrollView} from 'react-native';
-import {BleManager, Device, State, LogLevel} from 'react-native-ble-plx';
+import {Button, ScrollView, Text} from 'react-native';
+import {BleManager, Device, LogLevel, State} from 'react-native-ble-plx';
 import {useObservable} from 'rxjs-hooks';
-import {selectAdapterState, selectDevices} from './ble';
-import {BehaviorSubject, from, EMPTY} from 'rxjs';
-import {tap, switchMap} from 'rxjs/operators';
+import {
+  selectAdapterState,
+  selectCharacteristics,
+  selectDevices,
+  selectServices,
+  createDeviceConnection,
+} from './ble';
 
 const App: React.FC = () => {
   const bleManager = new BleManager();
@@ -17,36 +21,16 @@ const App: React.FC = () => {
   );
   const devices: Device[] | null = useObservable(() => devices$);
 
-  const _selectedDevice$ = new BehaviorSubject<Device | null>(null);
-  const selectedDevice$ = _selectedDevice$.asObservable();
+  const onButtonPress = (device: Device) => {
+    bleManager.stopDeviceScan();
 
-  const onButtonPress = (device: Device) => _selectedDevice$.next(device);
-  const connectedDevice$ = selectedDevice$.pipe(
-    tap(() => bleManager.stopDeviceScan()),
-    switchMap((device) => {
-      if (!device) {
-        return EMPTY;
-      }
-      return from(device.connect());
-    }),
-  );
-  const discoveredServicesAndCharacteristics$ = connectedDevice$.pipe(
-    switchMap((device) => from(device.discoverAllServicesAndCharacteristics())),
-  );
+    const connectedDevice$ = createDeviceConnection(device);
+    const servicesForDevice$ = selectServices(connectedDevice$);
 
-  const services$ = discoveredServicesAndCharacteristics$.pipe(
-    switchMap((device) => device.services()),
-  );
-
-  const characteristics$ = services$.pipe(
-    switchMap((services) =>
-      from(services).pipe(switchMap((service) => service.characteristics())),
-    ),
-  );
-
-  characteristics$.subscribe((characteristics) =>
-    console.log('characteristics', characteristics),
-  );
+    selectCharacteristics(servicesForDevice$).subscribe((characteristics) =>
+      console.log('characteristics', characteristics),
+    );
+  };
 
   return (
     <ScrollView>

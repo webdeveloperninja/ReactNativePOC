@@ -1,11 +1,12 @@
 import React from 'react';
 import {Text, View} from 'react-native';
-import {BleManager, Device, State} from 'react-native-ble-plx';
+import {BleManager, Device, State, LogLevel} from 'react-native-ble-plx';
 import {useObservable} from 'rxjs-hooks';
 import {selectAdapterState, selectDevices} from './ble';
 
 const App: React.FC = () => {
   const bleManager = new BleManager();
+  bleManager.setLogLevel(LogLevel.Verbose);
   const bluetoothAdapterState$ = selectAdapterState(bleManager);
   const devices$ = selectDevices(bluetoothAdapterState$, bleManager);
 

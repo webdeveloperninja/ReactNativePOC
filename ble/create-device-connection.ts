@@ -6,7 +6,7 @@ export const createDeviceConnection = (device: Device) =>
   from(device.isConnected()).pipe(
     switchMap((isConnected) => {
       if (isConnected) {
-        return of();
+        return of(device);
       } else {
         return from(device.connect());
       }

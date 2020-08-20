@@ -15,7 +15,7 @@ import {
   characteristicId,
 } from './ble';
 import {useObservable} from 'rxjs-hooks';
-import {Card, Button} from 'react-native-paper';
+import {Card, Button, Title} from 'react-native-paper';
 import base64 from 'react-native-base64';
 
 export type BleScannerProps = {
@@ -45,6 +45,7 @@ const BleScanner: React.FunctionComponent<BleScannerProps> = ({bleManager}) => {
 
   return (
     <Card>
+      <Title>BLE enabled devices</Title>
       {devices?.map((device, i) => (
         <Button mode="contained" key={i} onPress={() => onButtonPress(device)}>
           <Text>{device.name ? device.name : ''}</Text>

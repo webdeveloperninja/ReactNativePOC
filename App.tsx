@@ -1,6 +1,6 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {ScrollView} from 'react-native';
-import {Provider, Appbar, Title} from 'react-native-paper';
+import {Provider, Appbar, Button} from 'react-native-paper';
 import BleScanner from './BleScanner';
 import {BleManager} from 'react-native-ble-plx';
 
@@ -8,7 +8,16 @@ const App: React.FC = () => {
   const title = 'Device Manager';
   const subtitle = 'Manage your All Things Sensors device';
 
-  const bleManager = new BleManager();
+  const [bleManager, setBleManager] = useState<BleManager>();
+
+  const startBleScanHandler = () => {
+    setBleManager(new BleManager());
+  };
+
+  const resetHandler = () => {
+    bleManager?.destroy();
+    setBleManager(undefined);
+  };
 
   return (
     <Provider>
@@ -16,8 +25,21 @@ const App: React.FC = () => {
         <Appbar.Header>
           <Appbar.Content title={title} subtitle={subtitle} />
         </Appbar.Header>
-        <Title>Bluetooth Devices</Title>
-        <BleScanner bleManager={bleManager} />
+
+        {!!bleManager ? (
+          <Button icon="broom" mode="contained" onPress={resetHandler}>
+            Start over
+          </Button>
+        ) : (
+          <Button
+            icon="bluetooth-connect"
+            mode="contained"
+            onPress={startBleScanHandler}>
+            Scan for device
+          </Button>
+        )}
+
+        {!!bleManager ? <BleScanner bleManager={bleManager} /> : null}
       </ScrollView>
     </Provider>
   );

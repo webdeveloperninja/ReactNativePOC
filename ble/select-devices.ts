@@ -41,7 +41,7 @@ const selectDevicesFn: SetDeviceListnerFn = (
         if (
           deviceToAdd != null &&
           deviceToAdd.name !== null &&
-          !_devices.value.some((device) => device.id === device.id)
+          !_devices.value.some((d) => d.name === deviceToAdd.name)
         ) {
           _devices.next([..._devices.value, deviceToAdd]);
         }

@@ -1,73 +1,23 @@
-import React, {useState} from 'react';
-import {ScrollView, Text} from 'react-native';
-import {
-  BleManager,
-  Characteristic,
-  Device,
-  LogLevel,
-  State,
-} from 'react-native-ble-plx';
-import {Button, Provider} from 'react-native-paper';
-import {useObservable} from 'rxjs-hooks';
-import {
-  characteristicId,
-  createDeviceConnection,
-  esp32ServiceId,
-  selectAdapterState,
-  selectDevices,
-} from './ble';
-import base64 from 'react-native-base64';
+import React from 'react';
+import {ScrollView} from 'react-native';
+import {Provider, Appbar, Title} from 'react-native-paper';
+import BleScanner from './BleScanner';
+import {BleManager} from 'react-native-ble-plx';
 
 const App: React.FC = () => {
+  const title = 'Device Manager';
+  const subtitle = 'Manage your All Things Sensors device';
+
   const bleManager = new BleManager();
-  bleManager.setLogLevel(LogLevel.Verbose);
-  const bluetoothAdapterState$ = selectAdapterState(bleManager);
-  const devices$ = selectDevices(bluetoothAdapterState$, bleManager);
-
-  const bluetoothAdapterState: State | null = useObservable(
-    () => bluetoothAdapterState$,
-  );
-  const devices: Device[] | null = useObservable(() => devices$);
-
-  const [characteristics, setCharacteristics] = useState<Characteristic[]>([]);
-
-  const onButtonPress = (device: Device) => {
-    bleManager.stopDeviceScan();
-
-    const connectedDevice$ = createDeviceConnection(device);
-
-    connectedDevice$.subscribe((d) => {
-      d.readCharacteristicForService(
-        esp32ServiceId,
-        characteristicId,
-      ).then((c) => setCharacteristics([c]));
-    });
-  };
 
   return (
     <Provider>
       <ScrollView>
-        <Text>BLE Application</Text>
-        <Text>Adapter State: {bluetoothAdapterState}</Text>
-        {devices?.map((device, i) => (
-          <Button
-            mode="contained"
-            key={i}
-            onPress={() => onButtonPress(device)}>
-            <Text>{device.name ? device.name : ''}</Text>
-          </Button>
-        ))}
-
-        <Text>Characteristics</Text>
-        {characteristics ? (
-          characteristics.map((c, i) => (
-            <Text key={i}>
-              UUID: {c.uuid}, VALUE: {base64.decode(c.value)}
-            </Text>
-          ))
-        ) : (
-          <Text>No Characteristics Found</Text>
-        )}
+        <Appbar.Header>
+          <Appbar.Content title={title} subtitle={subtitle} />
+        </Appbar.Header>
+        <Title>Bluetooth Devices</Title>
+        <BleScanner bleManager={bleManager} />
       </ScrollView>
     </Provider>
   );

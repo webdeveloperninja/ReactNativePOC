@@ -1,45 +1,32 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {Text} from 'react-native';
-import {
-  BleManager,
-  LogLevel,
-  State,
-  Device,
-  Characteristic,
-} from 'react-native-ble-plx';
-import {
-  selectAdapterState,
-  selectDevices,
-  createDeviceConnection,
-  esp32ServiceId,
-  characteristicId,
-} from './ble';
+import {BleManager, Device, LogLevel} from 'react-native-ble-plx';
+import {Button, Card, Title} from 'react-native-paper';
 import {useObservable} from 'rxjs-hooks';
-import {Card, Button, Title} from 'react-native-paper';
-import base64 from 'react-native-base64';
+import {first} from 'rxjs/operators';
+import {createDeviceConnection, selectAdapterState, selectDevices} from './ble';
 
 export type BleScannerProps = {
   bleManager: BleManager;
+  onDeviceSelection: (device: Device) => void;
 };
 
-const BleScanner: React.FunctionComponent<BleScannerProps> = ({bleManager}) => {
+const BleScanner: React.FunctionComponent<BleScannerProps> = ({
+  bleManager,
+  onDeviceSelection,
+}) => {
   bleManager.setLogLevel(LogLevel.Verbose);
 
   const bluetoothAdapterState$ = selectAdapterState(bleManager);
   const devices$ = selectDevices(bluetoothAdapterState$, bleManager);
   const devices: Device[] | null = useObservable(() => devices$);
-  const [characteristics, setCharacteristics] = useState<Characteristic[]>([]);
 
   const onButtonPress = (device: Device) => {
     bleManager.stopDeviceScan();
-
     const connectedDevice$ = createDeviceConnection(device);
 
-    connectedDevice$.subscribe((d) => {
-      d.readCharacteristicForService(
-        esp32ServiceId,
-        characteristicId,
-      ).then((c) => setCharacteristics([c]));
+    connectedDevice$.pipe(first()).subscribe((connectedDevice) => {
+      onDeviceSelection(connectedDevice);
     });
   };
 
@@ -51,17 +38,6 @@ const BleScanner: React.FunctionComponent<BleScannerProps> = ({bleManager}) => {
           <Text>{device.name ? device.name : ''}</Text>
         </Button>
       ))}
-
-      <Text>Characteristics</Text>
-      {characteristics ? (
-        characteristics.map((c, i) => (
-          <Text key={i}>
-            UUID: {c.uuid}, VALUE: {base64.decode(c.value)}
-          </Text>
-        ))
-      ) : (
-        <Text>No Characteristics Found</Text>
-      )}
     </Card>
   );
 };

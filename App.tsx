@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import {ScrollView} from 'react-native';
 import {Provider, Appbar, Button} from 'react-native-paper';
 import BleScanner from './BleScanner';
-import {BleManager} from 'react-native-ble-plx';
+import {BleManager, Device} from 'react-native-ble-plx';
 
 const App: React.FC = () => {
   const title = 'Device Manager';
@@ -17,6 +17,10 @@ const App: React.FC = () => {
   const resetHandler = () => {
     bleManager?.destroy();
     setBleManager(undefined);
+  };
+
+  const onDeviceSelection = (device: Device) => {
+    console.log('device selected', device);
   };
 
   return (
@@ -39,7 +43,12 @@ const App: React.FC = () => {
           </Button>
         )}
 
-        {!!bleManager ? <BleScanner bleManager={bleManager} /> : null}
+        {!!bleManager ? (
+          <BleScanner
+            bleManager={bleManager}
+            onDeviceSelection={onDeviceSelection}
+          />
+        ) : null}
       </ScrollView>
     </Provider>
   );

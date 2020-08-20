@@ -1,14 +1,16 @@
 import React, {useState} from 'react';
 import {ScrollView} from 'react-native';
-import {Provider, Appbar, Button} from 'react-native-paper';
-import BleScanner from './BleScanner';
 import {BleManager, Device} from 'react-native-ble-plx';
+import {Appbar, Button, Provider} from 'react-native-paper';
+import BleScanner from './BleScanner';
+import DeviceViewer from './DeviceViewer';
 
 const App: React.FC = () => {
   const title = 'Device Manager';
   const subtitle = 'Manage your All Things Sensors device';
 
   const [bleManager, setBleManager] = useState<BleManager>();
+  const [device, setDevice] = useState<Device>();
 
   const startBleScanHandler = () => {
     setBleManager(new BleManager());
@@ -17,10 +19,11 @@ const App: React.FC = () => {
   const resetHandler = () => {
     bleManager?.destroy();
     setBleManager(undefined);
+    setDevice(undefined);
   };
 
   const onDeviceSelection = (device: Device) => {
-    console.log('device selected', device);
+    setDevice(device);
   };
 
   return (
@@ -43,12 +46,14 @@ const App: React.FC = () => {
           </Button>
         )}
 
-        {!!bleManager ? (
+        {!!bleManager && !device ? (
           <BleScanner
             bleManager={bleManager}
             onDeviceSelection={onDeviceSelection}
           />
         ) : null}
+
+        {!!device ? <DeviceViewer device={device}></DeviceViewer> : null}
       </ScrollView>
     </Provider>
   );

@@ -1,7 +1,9 @@
 import React, {useState} from 'react';
 import {ScrollView} from 'react-native';
 import {BleManager, Device} from 'react-native-ble-plx';
-import {Appbar, Button, Provider} from 'react-native-paper';
+import {Appbar, Button, Provider, Snackbar} from 'react-native-paper';
+import {first} from 'rxjs/operators';
+import {sendDataToDevice} from './ble';
 import BleScanner from './BleScanner';
 import DeviceViewer from './DeviceViewer';
 
@@ -11,6 +13,8 @@ const App: React.FC = () => {
 
   const [bleManager, setBleManager] = useState<BleManager>();
   const [device, setDevice] = useState<Device>();
+  const [isSnackbarVisible, setSnackbarVisible] = useState(false);
+  const [snackbarText, setSnackbarText] = useState<string>();
 
   const startBleScanHandler = () => {
     setBleManager(new BleManager());
@@ -24,6 +28,22 @@ const App: React.FC = () => {
 
   const onDeviceSelection = (device: Device) => {
     setDevice(device);
+  };
+
+  const onSendDataToDevice = (data: string, device: Device) => {
+    if (!bleManager) {
+      throw new Error('Ble manager must be set');
+    }
+    sendDataToDevice(data, bleManager, device)
+      .pipe(first())
+      .subscribe(() => {
+        setSnackbarVisible(true);
+        setSnackbarText('Successfully sent data to the device');
+      });
+  };
+
+  const onDismissSnackBar = () => {
+    setSnackbarVisible(false);
   };
 
   return (
@@ -53,8 +73,15 @@ const App: React.FC = () => {
           />
         ) : null}
 
-        {!!device ? <DeviceViewer device={device}></DeviceViewer> : null}
+        {!!device ? (
+          <DeviceViewer
+            device={device}
+            onSendDataToDevice={onSendDataToDevice}></DeviceViewer>
+        ) : null}
       </ScrollView>
+      <Snackbar visible={isSnackbarVisible} onDismiss={onDismissSnackBar}>
+        {snackbarText}
+      </Snackbar>
     </Provider>
   );
 };

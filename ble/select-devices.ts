@@ -2,9 +2,7 @@ import {BleManager, Device, State} from 'react-native-ble-plx';
 import {BehaviorSubject, defer, Observable} from 'rxjs';
 import {distinctUntilChanged, filter, switchMap} from 'rxjs/operators';
 import {requestPermissionForBle} from './permissions';
-
-export const esp32ServiceId = '4fafc201-1fb5-459e-8fcc-c5c9c331914b';
-export const characteristicId = 'beb5483e-36e1-4688-b7f5-ea07361b26a8';
+import {serviceId} from './devices/esp32';
 
 type SetDeviceListnerFn = (manager: BleManager) => Observable<Device[]>;
 
@@ -13,7 +11,7 @@ type HardwareDevice = {
 };
 
 const esp32: HardwareDevice = {
-  services: [esp32ServiceId],
+  services: [serviceId],
 };
 
 export const selectDevices: (

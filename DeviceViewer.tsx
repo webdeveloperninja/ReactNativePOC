@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {View} from 'react-native';
 import {Device} from 'react-native-ble-plx';
 import {Button, Card, Text, Title, RadioButton} from 'react-native-paper';
@@ -12,14 +12,14 @@ const DeviceViewer: React.FunctionComponent<DeviceViewerProps> = ({
   device,
   onSendDataToDevice,
 }) => {
-  const [value, setValue] = React.useState();
+  const [value, setValue] = useState<string>();
 
   const onChangeText = (text: string) => {
     setValue(text);
   };
 
   const sendDataHandler = () => {
-    onSendDataToDevice(value, device);
+    onSendDataToDevice(value ? value : '', device);
   };
 
   return (

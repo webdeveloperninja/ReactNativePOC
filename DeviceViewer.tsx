@@ -1,7 +1,9 @@
+import {decode} from 'base-64';
 import React, {useState} from 'react';
 import {View} from 'react-native';
-import {Device} from 'react-native-ble-plx';
-import {Button, Card, Text, Title, RadioButton} from 'react-native-paper';
+import {Characteristic, Device} from 'react-native-ble-plx';
+import {Button, Card, RadioButton, Text, Title} from 'react-native-paper';
+import {gpio2CharacteristicId, serviceId} from './ble';
 
 export type DeviceViewerProps = {
   device: Device;
@@ -13,6 +15,7 @@ const DeviceViewer: React.FunctionComponent<DeviceViewerProps> = ({
   onSendDataToDevice,
 }) => {
   const [value, setValue] = useState<string>();
+  const [characteristic, setCharacteristic] = useState<Characteristic>();
 
   const onChangeText = (text: string) => {
     setValue(text);
@@ -20,6 +23,14 @@ const DeviceViewer: React.FunctionComponent<DeviceViewerProps> = ({
 
   const sendDataHandler = () => {
     onSendDataToDevice(value ? value : '', device);
+  };
+
+  const getCharacteristics = async () => {
+    const characteristic = await device.readCharacteristicForService(
+      serviceId,
+      gpio2CharacteristicId,
+    );
+    setCharacteristic(characteristic);
   };
 
   return (
@@ -47,6 +58,12 @@ const DeviceViewer: React.FunctionComponent<DeviceViewerProps> = ({
       <Button icon="broom" mode="contained" onPress={sendDataHandler}>
         Send Command
       </Button>
+
+      <Button icon="broom" mode="contained" onPress={getCharacteristics}>
+        Get Characteristics Value
+      </Button>
+
+      <Text>{!!characteristic ? decode(characteristic.value) : ''}</Text>
     </Card>
   );
 };

@@ -3,7 +3,7 @@ import React, {useState} from 'react';
 import {View} from 'react-native';
 import {Characteristic, Device} from 'react-native-ble-plx';
 import {Button, Card, RadioButton, Text, Title} from 'react-native-paper';
-import {gpio2CharacteristicId, serviceId} from './ble';
+import {gpio2CharacteristicId, serviceId} from '../infrastructure/bluetooth';
 
 export type DeviceViewerProps = {
   device: Device;

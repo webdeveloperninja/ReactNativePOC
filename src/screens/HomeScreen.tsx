@@ -3,9 +3,9 @@ import {ScrollView} from 'react-native';
 import {BleManager, Device} from 'react-native-ble-plx';
 import {Button, Provider, Snackbar} from 'react-native-paper';
 import {first} from 'rxjs/operators';
-import {sendDataToDevice} from '../ble';
-import BleScanner from '../BleScanner';
-import DeviceViewer from '../DeviceViewer';
+import {sendDataToDevice} from '../infrastructure/bluetooth';
+import BleScanner from '../components/BleScanner';
+import DeviceViewer from '../components/DeviceViewer';
 import {screenWrapperStyles} from '../styles/screen';
 
 const HomeScreen: React.FunctionComponent = () => {

@@ -1,6 +1,6 @@
 import 'react-native';
 import {Device} from 'react-native-ble-plx';
-import {createDeviceConnection} from '../ble';
+import {createDeviceConnection} from '../src/infrastructure/bluetooth';
 
 const createDevice = () => {
   return {

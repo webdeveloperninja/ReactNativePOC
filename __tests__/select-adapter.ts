@@ -1,5 +1,5 @@
 import {BleManager, State} from 'react-native-ble-plx';
-import {selectAdapterState} from '../ble';
+import {selectAdapterState} from '../src/infrastructure/bluetooth';
 import {skip} from 'rxjs/operators';
 
 describe('selectAdapterState', () => {

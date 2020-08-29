@@ -4,7 +4,11 @@ import {BleManager, Device, LogLevel} from 'react-native-ble-plx';
 import {Button, Card, Title} from 'react-native-paper';
 import {useObservable} from 'rxjs-hooks';
 import {first} from 'rxjs/operators';
-import {createDeviceConnection, selectAdapterState, selectDevices} from './ble';
+import {
+  createDeviceConnection,
+  selectAdapterState,
+  selectDevices,
+} from '../infrastructure/bluetooth';
 
 export type BleScannerProps = {
   bleManager: BleManager;

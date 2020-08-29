@@ -3,7 +3,7 @@ import {createStackNavigator} from '@react-navigation/stack';
 import React from 'react';
 import 'react-native-gesture-handler';
 import HomeScreen from './src/screens/HomeScreen';
-import ProfileScreen from './src/screens/ProfileScreen';
+import DeviceManagementScreen from './src/screens/DeviceManagementScreen';
 
 const Stack = createStackNavigator();
 
@@ -16,7 +16,10 @@ const App: React.FC = () => {
           component={HomeScreen}
           options={{title: 'All Things Sensors - Home'}}
         />
-        <Stack.Screen name="Profile" component={ProfileScreen} />
+        <Stack.Screen
+          name="DeviceManagement"
+          component={DeviceManagementScreen}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );

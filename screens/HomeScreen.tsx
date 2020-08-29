@@ -1,17 +1,14 @@
 import React, {useState} from 'react';
-import {Text, Button, Snackbar, Provider} from 'react-native-paper';
-import {View, ScrollView} from 'react-native';
-import {screenWrapperStyles} from '../styles/screen';
-import {sendDataToDevice} from '../ble';
+import {ScrollView} from 'react-native';
+import {BleManager, Device} from 'react-native-ble-plx';
+import {Button, Provider, Snackbar} from 'react-native-paper';
 import {first} from 'rxjs/operators';
-import {Device, BleManager} from 'react-native-ble-plx';
+import {sendDataToDevice} from '../ble';
 import BleScanner from '../BleScanner';
 import DeviceViewer from '../DeviceViewer';
+import {screenWrapperStyles} from '../styles/screen';
 
 const HomeScreen: React.FunctionComponent = () => {
-  const title = 'Device Manager';
-  const subtitle = 'Manage your All Things Sensors device';
-
   const [bleManager, setBleManager] = useState<BleManager>();
   const [device, setDevice] = useState<Device>();
   const [isSnackbarVisible, setSnackbarVisible] = useState(false);

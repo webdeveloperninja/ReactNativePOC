@@ -1,12 +1,13 @@
 import {BleManager, Device} from 'react-native-ble-plx';
 import {from} from 'rxjs';
-import {serviceId, characteristicId} from './devices/esp32';
+import {serviceId} from './devices/esp32';
 import {encode} from 'base-64';
 
 const base64StringKey = 'base64';
 
 export const sendDataToDevice = (
   valueToSend: string,
+  characteristicId: string,
   bleManager: BleManager,
   device: Device,
 ) => {

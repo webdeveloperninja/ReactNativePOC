@@ -18,11 +18,15 @@ const DeviceManagementScreen: React.FunctionComponent = ({route}) => {
     setDevice(route.params.device);
   });
 
-  const onSendDataToDevice = (data: string, device: Device) => {
+  const onSendDataToDevice = (
+    data: string,
+    device: Device,
+    characteristicId: string,
+  ) => {
     if (!bleManager) {
       throw new Error('Ble manager must be set');
     }
-    sendDataToDevice(data, bleManager, device)
+    sendDataToDevice(data, characteristicId, bleManager, device)
       .pipe(first())
       .subscribe(() => {
         setSnackbarVisible(true);
